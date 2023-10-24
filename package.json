@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/ricomortus/tinyapp/issues"
   },
-  "homepage": "https://github.com/ricomortus/tinyapp#readme"
+  "homepage": "https://github.com/ricomortus/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
