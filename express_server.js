@@ -37,13 +37,14 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-
 app.get("/urls/news", (req, res) => {
   res.render("urls_news");
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
+  // console.log(req.body); // Log the POST request body to the console
+  urlDatabase[generateRandomString()] = req.body.longURL;
+  console.log(urlDatabase);
   res.send("Ok"); // Respond with 'Ok' (we will replace this)
 });
 
