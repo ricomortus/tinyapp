@@ -20,18 +20,6 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-// app.get("/", (req, res) => {
-//   res.send("Hello!");
-// });
-
-// app.get("/urls.json", (req, res) => {
-//   res.json(urlDatabase);
-// });
-
-// app.get("/hello", (req, res) => {
-//   res.send("<html><body>Hello <b>World</b></body></html>\n");
-// });
-
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
@@ -68,6 +56,12 @@ app.post("/urls/:id/update", (req, res) => {
   const id = req.params.id;
   const newLongURL = req.body.newLongURL;
   urlDatabase[id] = newLongURL;
+  res.redirect("/urls");
+});
+
+app.post("/login", (req, res) => {
+  const { username } = req.body;
+  res.cookie("username", username);
   res.redirect("/urls");
 });
 
