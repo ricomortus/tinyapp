@@ -18,9 +18,22 @@ const generateRandomString = () => {
   return result;
 };
 
+
+// const urlDatabase = {
+//   "b2xVn2": "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.google.com"
+// };
+
+//New url database structure
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 
 const users = {
@@ -32,6 +45,11 @@ const users = {
 };
 
 app.get("/urls", (req, res) => {
+  const userID = req.cookies["user_id"];
+  if (!userID && !users[userID]) {
+    res.status(403).send("Please log in to access your urls.");
+    return;
+  }
   const templateVars = {
     urls: urlDatabase,
     user: users[req.cookies["user_id"]],
@@ -46,7 +64,8 @@ app.post("/urls", (req, res) => {
     return;
   }
   const id = generateRandomString();
-  urlDatabase[id] = req.body.longURL;
+  //Update access of longURL with new data structure
+  urlDatabase[id].longURL = req.body.longURL;
   res.redirect(`/urls/${id}`);
 });
 
@@ -64,7 +83,8 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
-  const longURL = urlDatabase[id];
+  //Update access of longURL with new data structure
+  const longURL = urlDatabase[id].longURL;
   if (!longURL) {
     return res.status(404).send("Short URL ID does not exist.");
   }
@@ -78,7 +98,8 @@ app.get("/urls/:id", (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   const id = req.params.id;
-  const longURL = urlDatabase[id];
+  //Update access of longURL with new data structure
+  const longURL = urlDatabase[id].longURL;
   res.redirect(longURL);
 });
 
@@ -91,7 +112,8 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id/update", (req, res) => {
   const id = req.params.id;
   const newLongURL = req.body.newLongURL;
-  urlDatabase[id] = newLongURL;
+  //Update access of longURL with new data structure
+  urlDatabase[id].longURL = newLongURL;
   res.redirect("/urls");
 });
 
