@@ -1,6 +1,6 @@
 const express = require("express");
 const cookieParser = require('cookie-parser');
-const { findUserByEmail } = require('./helper');
+const { findUserByEmail, urlsForUser } = require('./helper');
 const app = express();
 const PORT = 8080;
 
@@ -50,8 +50,9 @@ app.get("/urls", (req, res) => {
     res.status(403).send("Please log in to access your urls.");
     return;
   }
+  const userUrls = urlsForUser(userID, urlDatabase);
   const templateVars = {
-    urls: urlDatabase,
+    urls: userUrls,
     user: users[req.cookies["user_id"]],
   };
   res.render("urls_index", templateVars);

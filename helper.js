@@ -7,4 +7,17 @@ const findUserByEmail = (email, usersDatabase) => {
   return null;
 };
 
-module.exports = { findUserByEmail };
+const urlsForUser = (id, urlDatabase) => {
+  let userUrls = { };
+  for (let key in urlDatabase) {
+    if (id === urlDatabase[key].userID) {
+      userUrls[key] = {
+        longURL: urlDatabase[key].longURL,
+        userID: urlDatabase[key].userID
+      };
+    }
+  }
+  return userUrls;
+};
+
+module.exports = { findUserByEmail, urlsForUser };
