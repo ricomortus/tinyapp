@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require('cookie-parser');
+const { findUserByEmail } = require('./helper');
 const app = express();
 const PORT = 8080;
 
@@ -22,7 +23,13 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-const users = { };
+const users = {
+  test: {
+    id: "test",
+    email: "test@test.com",
+    password: "test"
+  }
+};
 
 app.get("/urls", (req, res) => {
   const templateVars = {
@@ -82,15 +89,15 @@ app.post("/urls/:id/update", (req, res) => {
 app.post("/login", (req, res) => {
   const { email } = req.body;
 
-  const userId = Object.keys(users).find(id => users[id].email === email);
-  if (userId) {
-    res.cookie("user_id", userId);
+  // const userId = Object.keys(users).find(id => users[id].email === email);
+  const user = findUserByEmail(email, users);
+  if (user) {
+    res.cookie("user_id", user.id);
     res.redirect("/urls");
   } else {
     res.status(401).send('Email not registered.');
   }
 });
-
 
 app.post("/logout", (req,res) => {
   res.clearCookie('user_id');
@@ -104,18 +111,26 @@ app.get("/register", (req, res) => {
   res.render("urls_register", templateVars);
 });
 
-
 app.post("/register", (req,res) => {
   const { email, password } = req.body;
-  const id = generateRandomString();
-  users[id] = {
-    id,
-    email,
-    password
-  };
+  // const userID = Object.keys(users).find(id => users[id].email === email);
+  const user = findUserByEmail(email, users);
 
-  res.cookie('user_id', id);
-  res.redirect('/urls');
+  if (email.length === 0 || password.length === 0) {
+    res.status(400).send("A valid email and a valid password must be provided.");
+  } else if (user) {
+    res.status(400).send("This email already has an account associated with it.");
+  } else {
+    const id = generateRandomString();
+    users[id] = {
+      id,
+      email,
+      password
+    };
+    res.cookie('user_id', id);
+    res.redirect('/urls');
+  }
+
 });
 
 app.listen(PORT, () => {
