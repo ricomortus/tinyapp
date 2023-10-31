@@ -66,7 +66,10 @@ app.post("/urls", (req, res) => {
   }
   const id = generateRandomString();
   //Update access of longURL with new data structure
-  urlDatabase[id].longURL = req.body.longURL;
+  urlDatabase[id] = {
+    longURL: req.body.longURL,
+    userID
+  };
   res.redirect(`/urls/${id}`);
 });
 
@@ -97,13 +100,29 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+//////////////////////////////////////////////////////////////
+/////////Route to fix
+//////////////////////////////////////////////////////////////
+// app.get("/u/:id", (req, res) => {
+//   const id = req.params.id;
+//   const longURL = urlDatabase[id].longURL;
+//   console.log(id);
+//   console.log(longURL);
+//   //temp
+//   res.redirect(longURL);
+// });
 app.get("/u/:id", (req, res) => {
   const id = req.params.id;
-  //Update access of longURL with new data structure
+  if (!urlDatabase[id]) {
+    return res.status(404).send("Short URL ID does not exist.");
+  }
   const longURL = urlDatabase[id].longURL;
   res.redirect(longURL);
 });
 
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
   delete urlDatabase[id];
