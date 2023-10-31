@@ -23,13 +23,13 @@
           <button type="submit">Logout</button>
         </form>
       <% } else { %>
-        <!-- <form action="/login" method="post">
-          <input type="text" name="username" placeholder="Username">
+        <form action="/login" method="get">
+          <!-- <input type="text" name="email" placeholder="Email"> -->
           <button type="submit">Login</button>
-        </form> -->
-        <form action="/login" method="post">
-          <input type="text" name="email" placeholder="Email">
-          <button type="submit">Login</button>
+        </form>
+        <form action="/register" method="get">
+          <!-- <input type="text" name="email" placeholder="Email"> -->
+          <button type="submit">Register</button>
         </form>
       <% } %>
     </div>
