@@ -39,17 +39,17 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+app.post("/urls", (req, res) => {
+  const id = generateRandomString();
+  urlDatabase[id] = req.body.longURL;
+  res.redirect(`/urls/${id}`);
+});
+
 app.get("/urls/new", (req, res) => {
   const templateVars = {
     user: users[req.cookies["user_id"]]
   };
   res.render("urls_new",templateVars);
-});
-
-app.post("/urls", (req, res) => {
-  const id = generateRandomString();
-  urlDatabase[id] = req.body.longURL;
-  res.redirect(`/urls/${id}`);
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -89,19 +89,25 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const { email } = req.body;
+  const { email, password } = req.body;
+  console.log(password);
   const user = findUserByEmail(email, users);
+  console.log(user);
   if (user) {
-    res.cookie("user_id", user.id);
-    res.redirect("/urls");
+    if (password === user.password) {
+      res.cookie("user_id", user.id);
+      res.redirect("/urls");
+    } else {
+      res.status(403).send('Incorrect password');
+    }
   } else {
-    res.status(401).send('Email not registered.');
+    res.status(403).send('Email not registered.');
   }
 });
 
 app.post("/logout", (req,res) => {
   res.clearCookie('user_id');
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 app.get("/register", (req, res) => {
@@ -113,9 +119,7 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req,res) => {
   const { email, password } = req.body;
-  // const userID = Object.keys(users).find(id => users[id].email === email);
   const user = findUserByEmail(email, users);
-
   if (email.length === 0 || password.length === 0) {
     res.status(400).send("A valid email and a valid password must be provided.");
   } else if (user) {
@@ -130,7 +134,6 @@ app.post("/register", (req,res) => {
     res.cookie('user_id', id);
     res.redirect('/urls');
   }
-
 });
 
 app.listen(PORT, () => {
