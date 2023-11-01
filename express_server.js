@@ -28,10 +28,12 @@ const generateRandomString = () => {
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
+    // userID: "test",
     userID: "aJ48lW",
   },
   i3BoGr: {
     longURL: "https://www.google.ca",
+    // userID: "test",
     userID: "aJ48lW",
   },
 };
@@ -86,31 +88,43 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  //accessing the unique short url id via params
   const id = req.params.id;
-  //Update access of longURL with new data structure
-  const longURL = urlDatabase[id].longURL;
-  if (!longURL) {
-    return res.status(404).send("Short URL ID does not exist.");
-  }
-  const templateVars = {
-    id,
-    longURL,
-    user: users[req.cookies["user_id"]]
-  };
-  res.render("urls_show", templateVars);
-});
+  //make sure user is logged in to access this page.
+  const userID = req.cookies["user_id"];
+  //Extract current users urls
+  const userUrls = urlsForUser(userID, urlDatabase);
 
-//////////////////////////////////////////////////////////////
-/////////Route to fix
-//////////////////////////////////////////////////////////////
-// app.get("/u/:id", (req, res) => {
-//   const id = req.params.id;
-//   const longURL = urlDatabase[id].longURL;
-//   console.log(id);
-//   console.log(longURL);
-//   //temp
-//   res.redirect(longURL);
-// });
+  if (!userID && !users[userID]) {
+    res.status(403).send("Please log in to access first.");
+    return;
+  } else {
+    //Loop through the userUrls object
+    for (let key in userUrls) {
+      //Check for matches of the params id, if matched, render.
+      if (key === id) {
+        //Update access of longURL with new data structure
+        const longURL = urlDatabase[id].longURL;
+        if (!longURL) {
+          return res.status(404).send("Short URL ID does not exist.");
+        }
+        const templateVars = {
+          id,
+          longURL,
+          user: users[req.cookies["user_id"]]
+        };
+        res.render("urls_show", templateVars);
+      }
+    }
+    //Return error message if user is trying to access a link that does not belong to them. 
+    return res.status(403).send("You cannot access this URL.");
+  }
+});
+  
+
+/**
+ * HTTP or HTTPS must be appended on long URLs for this to redirect properly.
+ */
 app.get("/u/:id", (req, res) => {
   const id = req.params.id;
   if (!urlDatabase[id]) {
@@ -120,9 +134,6 @@ app.get("/u/:id", (req, res) => {
   res.redirect(longURL);
 });
 
-/////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
   delete urlDatabase[id];
