@@ -4,7 +4,7 @@ const findUserByEmail = (email, usersDatabase) => {
       return usersDatabase[userID];
     }
   }
-  return null;
+  return undefined;
 };
 
 const urlsForUser = (id, urlDatabase) => {
