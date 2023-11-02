@@ -25,16 +25,13 @@ const generateRandomString = () => {
   return result;
 };
 
-//New url database structure
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
-    // userID: "test",
     userID: "aJ48lW",
   },
   i3BoGr: {
     longURL: "https://www.google.ca",
-    // userID: "test",
     userID: "aJ48lW",
   },
 };
@@ -48,7 +45,6 @@ const users = {
 };
 
 app.get("/urls", (req, res) => {
-  // const userID = req.cookies["user_id"];
   const userID = req.session.user_id;
   if (!userID || !users[userID]) {
     res.status(403).send("Please log in to access your urls.");
@@ -63,14 +59,12 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  // const userID = req.cookies["user_id"];
   const userID = req.session.user_id;
   if (!userID && !users[userID]) {
     res.status(403).send('You cannot shorten your URLs until you log in!');
     return;
   }
   const id = generateRandomString();
-  //Update access of longURL with new data structure
   urlDatabase[id] = {
     longURL: req.body.longURL,
     userID
@@ -79,7 +73,6 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  // const userID = req.cookies["user_id"];
   const userID = req.session.user_id;
   if (!userID || !users[userID]) {
     res.redirect("/login");
@@ -126,10 +119,6 @@ app.get("/urls/:id", (req, res) => {
   }
 });
   
-
-/**
- * HTTP or HTTPS must be appended on long URLs for this to redirect properly.
- */
 app.get("/u/:id", (req, res) => {
   const id = req.params.id;
   if (!urlDatabase[id]) {
@@ -148,14 +137,11 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id/update", (req, res) => {
   const id = req.params.id;
   const newLongURL = req.body.newLongURL;
-  //Update access of longURL with new data structure
   urlDatabase[id].longURL = newLongURL;
   res.redirect("/urls");
 });
 
-//GET /login
 app.get("/login", (req, res) => {
-  // const userID = req.cookies["user_id"];
   const userID = req.session.user_id;
   if (userID && users[userID]) {
     res.redirect("/urls");
@@ -166,7 +152,6 @@ app.get("/login", (req, res) => {
   };
   res.render("urls_login", templateVars);
 });
-
 
 
 app.post("/login", (req, res) => {
@@ -190,7 +175,6 @@ app.post("/logout", (req,res) => {
 });
 
 app.get("/register", (req, res) => {
-  // const userID = req.cookies["user_id"];
   const userID = req.session.user_id;
   if (userID && users[userID]) {
     res.redirect("/urls");
