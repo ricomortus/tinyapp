@@ -44,6 +44,15 @@ const users = {
   }
 };
 
+app.get("/", (req, res) => {
+  const userID = req.session.user_id;
+  if (!userID || !users[userID]) {
+    res.status(403).send("Please log in to access your urls.");
+    return;
+  }
+  res.redirect("/urls");
+});
+
 app.get("/urls", (req, res) => {
   const userID = req.session.user_id;
   if (!userID || !users[userID]) {
@@ -170,7 +179,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req,res) => {
-  delete req.session.user_id;
+  req.session = null;
   res.redirect("/login");
 });
 
